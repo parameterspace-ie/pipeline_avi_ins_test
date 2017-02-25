@@ -70,9 +70,13 @@ def run_query(request):
     We start the job using the job_request ID, and return the
     ID to the user so they can view progress.
     """
+
+    infile = request.POST.get("infile")
     outfile = request.POST.get("outfile")
 
+
     job = DemoModel.objects.create(
+        inputFile=infile,
         outputFile=outfile
     )
     return JsonResponse({})

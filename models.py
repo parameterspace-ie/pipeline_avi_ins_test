@@ -35,8 +35,9 @@ class DemoModel(AviJob):
             mean_time = 0
         return mean_time
 
-    outputFile = models.CharField(default="list_1.txt", max_length=100)
-    pipeline_task = "PrintList"
+    inputFile = models.CharField(default="avi1_avi1/output/list_1.txt", max_length=100)
+    outputFile = models.CharField(default="list_2", max_length=100)
+    pipeline_task = "AddNum"
 
     def get_absolute_url(self):
         return "%i/" % self.pk

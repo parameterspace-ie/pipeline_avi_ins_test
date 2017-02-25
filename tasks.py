@@ -14,29 +14,57 @@ from django.conf import settings
 # Class used for creating pipeline tasks
 from pipeline.classes import (
     AviTask,
-    AviLocalTarget,
+    AviParameter, AviLocalTarget,
 )
-import numpy as np
 
+inputFile = AviParameter()
 
-def list_1():
-    c=np.array([ 100, 4, 100, 7, 10, 17, 0, 100, 2, -4, 17, 4, 11, 100])
-    b = str(c)
+def list_2(inputFile):
+    with open(inputFile) as f:
+        mylist = list(f)
+        list_result=mylist[0]
+        
+    a=list_result.split()
+    b=a[(len(a)-1)]
+    c=b.split(']')
+    d=c[0]
+    a[(len(a)-1)] = d
+    
+    b=a[0]
+    c=b.split('[')
+    d=c[(len(c)-1)]
+    a[0] = d
+    
+    new_list=[]
+    for i in a:
+        m=float(i)
+        n=int(m)
+        y=n+5
+        new_list.append(y)
+
+    b = str(new_list)
     a = b.encode('utf-8')
     return a
 
 
-class PrintList(AviTask):
-    # fib_num = AviParameter()
+class AddNum(AviTask):
+
+    inputFile = AviParameter()
 
     def output(self):
         return AviLocalTarget(os.path.join(
             settings.OUTPUT_PATH,
-            "list_1.txt"
+            "list_2.txt"
+        ))
+
+    def input(self):
+        return AviLocalTarget(os.path.join(
+            '/user_space/', self.inputFile
         ))
 
     def run(self):
-        list_result = list_1()
+        list_result_2 = list_2(self.input().path)
         with open(self.output().path, 'wb') as out:
-            print(list_result)
-            out.write(list_result)
+            print(list_result_2)
+            out.write(list_result_2)
+
