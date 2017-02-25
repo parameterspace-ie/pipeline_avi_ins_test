@@ -9,8 +9,10 @@ An example AVI pipeline is defined here, consisting of three tasks:
 @req: REQ-0006
 @comp: AVI Web System
 """
-import os
+
 from django.conf import settings
+import numpy as  np
+import os
 # Class used for creating pipeline tasks
 from pipeline.classes import (
     AviTask,
@@ -19,42 +21,54 @@ from pipeline.classes import (
 
 inputFile = AviParameter()
 
-def list_2(inputFile):
+def list_3(inputFile):
     with open(inputFile) as f:
         mylist = list(f)
         list_result=mylist[0]
         
-    a=list_result.split()
+    a=list_result.split(',')
+
     b=a[(len(a)-1)]
     c=b.split(']')
     d=c[0]
     a[(len(a)-1)] = d
-    
+
     b=a[0]
     c=b.split('[')
     d=c[(len(c)-1)]
     a[0] = d
-    
-    new_list=[]
+
+    new_list1=[]
     for i in a:
         m=float(i)
         n=int(m)
-        y=n+5
-        new_list.append(y)
+        new_list1.append(n)
+        
+    new_list1 = np.array(new_list1)
+    new_list = new_list1 
 
-    b = str(new_list)
+    final_list=[]
+    for i in new_list:
+        if i == 105:
+            a = ' '
+        else:
+            a = chr((i-1) + ord('A'))
+        print(a)
+        final_list.append(a)
+
+    b = str(final_list)
     a = b.encode('utf-8')
     return a
 
 
-class AddNum(AviTask):
+class Convert(AviTask):
 
     inputFile = AviParameter()
 
     def output(self):
         return AviLocalTarget(os.path.join(
             settings.OUTPUT_PATH,
-            "list_2.txt"
+            "list_3.txt"
         ))
 
     def input(self):
@@ -63,8 +77,8 @@ class AddNum(AviTask):
         ))
 
     def run(self):
-        list_result_2 = list_2(self.input().path)
+        list_result_3 = list_3(self.input().path)
         with open(self.output().path, 'wb') as out:
-            print(list_result_2)
-            out.write(list_result_2)
+            print(list_result_3)
+            out.write(list_result_3)
 
